@@ -1,0 +1,2 @@
+- docker build -t escrow_api_docker .
+- docker compose up -d --build
