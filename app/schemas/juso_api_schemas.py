@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from fastapi import Query
+from typing import Union
 
 
 class SearchAddress(BaseModel):
@@ -18,4 +19,4 @@ class SearchHoList(BaseModel):
     rnMgtSn: str = Field(Query(description="rnMgtSn", regex="[0-9]"))
     buldMnnm: int = Field(Query(description="buldMnnm"))
     buldSlno: int = Field(Query(description="buldSlno"))
-    dongNm: str = Field(Query(description="dongNm(동이름)"))
+    dongNm: Union[str, None] = Field(Query(description="dongNm(동이름), 있으면 넣고 없으면 안보내도 됨", default=None))

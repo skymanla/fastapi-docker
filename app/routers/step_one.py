@@ -13,7 +13,7 @@ open_api = open_api_util.OpenApiUtils()
 @router.get("/has-possession-ledger", response_model=rest_response_schemas.RestResponse, description="전유부 존재")
 async def has_possession_ledger(payload: step_one_schemas.StepOneSchemas = Depends()):
     _params = {}
-    bun_ji_obj = make_address_utils.make_bun_ji(payload.jibunAddress)
+    bun_ji_obj = make_address_utils.bun_ji(payload.jibunAddress)
     _params["sigunguCd"] = payload.sigunguCode
     _params["bjdongCd"] = payload.bcode.replace(_params["sigunguCd"], "")
     _params["platGbCd"] = "0"
@@ -45,7 +45,7 @@ async def has_possession_ledger(payload: step_one_schemas.StepOneSchemas = Depen
                         possession_ledger = True
                         break
                 # make dong_ho_list
-                dong_ho_list = make_address_utils.make_dong_ho(item)
+                dong_ho_list = make_address_utils.dong_ho(item)
             elif isinstance(item, dict):
                 possession_ledger = True if item["regstrKindCdNm"] == "전유부" else False
 
@@ -63,8 +63,8 @@ async def has_possession_ledger(payload: step_one_schemas.StepOneSchemas = Depen
 async def get_br_expose_area_info(payload: step_one_schemas.GetDongHoSchemas = Depends()):
     _url = "http://apis.data.go.kr/1613000/BldRgstService_v2/getBrExposPubuseAreaInfo"
     _params = {}
-    sido_gu_gun_code = make_address_utils.make_sido_gugun_code(payload.bcode)
-    bun_ji_obj = make_address_utils.make_bun_ji(payload.jibunAddress)
+    sido_gu_gun_code = make_address_utils.sido_gugun_code(payload.bcode)
+    bun_ji_obj = make_address_utils.bun_ji(payload.jibunAddress)
     _params["sigunguCd"] = sido_gu_gun_code["sigunguCd"]
     _params["bjdongCd"] = sido_gu_gun_code["bjdongCd"]
     _params["platGbCd"] = "0"

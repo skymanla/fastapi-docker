@@ -1,76 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from app.schemas import kms_api_schemas, rest_response_schemas
-from app.utils import kms_conn_utils
+from fastapi import APIRouter, HTTPException, Query
+from app.utils import make_address_utils as address_utils, kms_api_utils
+from typing_extensions import Annotated
+from pydantic import Required
 
 router = APIRouter(
-    prefix='/kms',
-    tags=["KMS API"]
+    tags=["KMS API"],
+    prefix="/ekms"
 )
 
-r = kms_conn_utils.KmsConnUtils()
+kms_api = kms_api_utils.KmsApiUtils()
 
 
-@router.get('/search-jibun', description="지번으로 등기 검색")
-async def get_search_jibun(payload: kms_api_schemas.GetJibun = Depends()):
-    data = await r.get_jibun(payload)
-    return {
-        "data": data.json()
-    }
+@router.get("/junse_rate", description="전세가율 검색")
+async def get_junse_rate(
+        admCd: str = Query(description="법정동코드",
+                           regex="[^a-zA-Zㄱ-힣]",
+                           max_length=10)
+):
+    sigungu_code = address_utils.sido_gugun_code(admCd)
+    return await kms_api.get_junse_rate(sigungu_code["sigunguCd"])
 
 
-@router.get('/search-juso-apt-code', description="주소 & 단지코드 등기 검색")
-async def get_search_juso_apt_code(payload: kms_api_schemas.GetJusoAndAptCode = Depends()):
-    data = await r.get_juso_apt_code(payload)
-    return {
-        "data": data.json()
-    }
+@router.get("/agency-info", description="중개업소 조회")
+async def get_agency_info(sfl: str = Query(description="검색타입(defatult: 기본검색, boss: 대표자명, regNo: 등록번호, agency_nm: 상호명검색"),
+                          stx: str = Query(description="검색어")
+                          ):
+    return await kms_api.get_agency_info(search_type=sfl, search_word=stx)
 
-
-@router.get('/search-law-code', description="법정동코드로 등기 검색")
-async def get_search_law_code(payload: kms_api_schemas.GetLawCode = Depends()):
-    data = await r.get_law_code(payload)
-    return {
-        "data": data.json()
-    }
-
-
-@router.get('/search-juso', description="주소로 등기 검색")
-async def get_search_juso(payload: kms_api_schemas.GetJuso = Depends()):
-    data = await r.get_juso(payload)
-    return {
-        "data": data.json()
-    }
-
-
-@router.get('/search-road', description="도로명주소로 등기 검색")
-async def get_search_road(payload: kms_api_schemas.GetRoad = Depends()):
-    data = await r.get_road(payload)
-    return {
-        "data": data.json()
-    }
-
-
-@router.get('/iros-info', description="등기발급 요청")
-async def get_iros_info(req_seq: int, iros_no: str):
-    data = await r.get_iros(req_seq, iros_no)
-    return {
-        "data": data.json()
-    }
-
-
-@router.get('/test-response', response_model=rest_response_schemas.RestResponse)
-async def get_test_response():
-    ab = 1
-    if ab != 2:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="bad request")
-    return {
-        "code": "OK",
-        "data": [
-            {
-                "test": 1111,
-            },
-            {
-                "test": 2222,
-            }
-        ]
-    }

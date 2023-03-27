@@ -3,7 +3,7 @@ import re
 korean = re.compile('[\u3131-\u3163\uac00-\ud7a3]+')
 
 
-def make_bun_ji(address: str):
+def bun_ji(address: str):
     # 1. 한글부터 제거
     bun_ji = re.sub(korean, "", address)
     # 2. 공백 제거
@@ -22,7 +22,7 @@ def make_bun_ji(address: str):
     return bun_ji_dict
 
 
-def make_sido_gugun_code(bcode: str):
+def sido_gugun_code(bcode: str):
     # 앞에서 5자리
     sido_cd = bcode[:5]
     # 뒤에서 5자리
@@ -33,14 +33,7 @@ def make_sido_gugun_code(bcode: str):
     }
 
 
-# if not dong_ho_obj.get(_v['dongNm']):
-#     dong_ho_obj.update({str(_v['dongNm']): [_v['hoNm']]})
-# else:
-#     if _v['hoNm'] not in dong_ho_obj[_v['dongNm']]:
-#         dong_ho_obj[_v['dongNm']].append(_v['hoNm'])
-#         dong_ho_obj[_v['dongNm']].sort()
-
-def make_dong_ho(obj: list):
+def dong_ho(obj: list):
     dong_ho_obj = []
     for _i, _v in enumerate(obj):
         int_ho_nm = int(_v['hoNm'])
